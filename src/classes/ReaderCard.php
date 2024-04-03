@@ -1,4 +1,5 @@
 <?php
+
 namespace QTDL\Project;
 
 use PDO;
@@ -19,7 +20,7 @@ class ReaderCard
         $this->db = $pdo;
     }
 
-    public function getId(): string 
+    public function getId(): string
     {
         return $this->SoThe;
     }
@@ -35,6 +36,8 @@ class ReaderCard
         }
         return $readerCards;
     }
+    //thêm vào sql nâng cao
+
 
     protected function fillFromDB(array $row): void
     {
@@ -60,13 +63,13 @@ class ReaderCard
     public function validate(): bool
     {
         $valid = true;
-        
+
         // Kiểm tra hợp lệ của Ngày bắt đầu
         if (empty($this->NgayBatDau)) {
             $this->errors['NgayBatDau'] = 'Ngày bắt đầu không được để trống.';
             $valid = false;
         }
-        
+
         // Kiểm tra hợp lệ của Ngày hết hạn
         if (empty($this->NgayHetHan)) {
             $this->errors['NgayHetHan'] = 'Ngày hết hạn không được để trống.';
@@ -102,7 +105,7 @@ class ReaderCard
                     $this->SoThe = $this->generateRandomSoThe();
                 } while ($this->isSoTheExists($this->SoThe)); // Lặp lại cho đến khi không còn trùng lặp
             }
-        
+
             // Tiếp tục thực hiện lưu dữ liệu vào cơ sở dữ liệu
             $statement = $this->db->prepare(
                 'INSERT INTO TheThuVien (SoThe, NgayBatDau, NgayHetHan, GhiChu) VALUES (:SoThe, :NgayBatDau, :NgayHetHan, :GhiChu)'
@@ -162,17 +165,29 @@ class ReaderCard
         return $this->errors;
     }
     public function getReaderCardsSorted(string $sort_by): array
+    // {
+    //     $readerCards = [];
+    //     $statement = $this->db->prepare('SELECT * FROM TheThuVien ORDER BY ' . $sort_by);
+    //     $statement->execute();
+    //     while ($row = $statement->fetch()) {
+    //         $readerCard = new ReaderCard($this->db);
+    //         $readerCard->fillFromDB($row);
+    //         $readerCards[] = $readerCard;
+    //     }
+    //     return $readerCards;
+    // }
     {
-        $readerCards = [];
-        $statement = $this->db->prepare('SELECT * FROM TheThuVien ORDER BY ' . $sort_by);
+        $cards = [];
+        $statement = $this->db->prepare('CALL SapXepTheThuVienTheo' . $sort_by . '()');
         $statement->execute();
         while ($row = $statement->fetch()) {
-            $readerCard = new ReaderCard($this->db);
-            $readerCard->fillFromDB($row);
-            $readerCards[] = $readerCard;
+            $card = new ReaderCard($this->db);
+            $card->fillFromDB($row);
+            $cards[] = $card;
         }
-        return $readerCards;
+        return $cards;
     }
+
 
 
     public function searchReaderCards(string $keyword): array
@@ -188,4 +203,3 @@ class ReaderCard
         return $readerCards;
     }
 }
-?>

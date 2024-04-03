@@ -1,54 +1,22 @@
 <?php
-require_once __DIR__ . '/../src/bootstrap.php';
-require_once __DIR__ . '/../src/classes/Reader.php';
-
-use QTDL\Project\Reader;
-
-$reader = new Reader($PDO);
-$MaDocGia = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-
-// Kiểm tra xem MaDocGia có tồn tại và hợp lệ không
-if (empty($MaDocGia) || !($reader->find($MaDocGia))) {
-    redirect('/');
-}
-
-$errors = [];
-
+require_once 'connect.php';
+$MaDocGia = $_GET['id'];
+$query = "SELECT * FROM docgia WHERE maDocGia = ?";
+$statement = $pdo->prepare($query);
+$statement->execute([$MaDocGia]);
+$reader = $statement->fetch(PDO::FETCH_ASSOC);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Lấy ID của độc giả từ form
-    $id = $_POST['id'] ?? null;
+    $MaDocGia = $_POST['id'];
+    $TenDocGia = $_POST['TenDocGia'];
+    $DiaChi = $_POST['DiaChi'];
+    $SoThe = $_POST['SoThe'];
 
-    // Kiểm tra xem ID có tồn tại và hợp lệ không
-    if ($id === null) {
-        // Xử lý lỗi nếu cần
-    } else {
-        // Tạo một thể hiện mới của lớp Reader
-        $updatedReader = new Reader($PDO);
-
-        // Tìm độc giả dựa trên ID
-        $foundReader = $updatedReader->find($id);
-
-        // Kiểm tra xem độc giả có tồn tại không
-        if ($foundReader) {
-            // Lấy dữ liệu từ form và cập nhật độc giả
-            $data = [
-                'TenDocGia' => $_POST['TenDocGia'] ?? '',
-                'DiaChi' => $_POST['DiaChi'] ?? '',
-                'SoThe' => $_POST['SoThe'] ?? ''
-            ];
-            $foundReader->fill($data); // Đổ dữ liệu từ form vào độc giả
-            if ($foundReader->update($data)) {
-                // Nếu cập nhật thành công, bạn có thể chuyển hướng hoặc hiển thị thông báo thành công
-                header("Location: index.php");
-                exit();
-            } else {
-                // Nếu cập nhật không thành công, bạn có thể chuyển hướng hoặc hiển thị thông báo lỗi
-            }
-        } else {
-            // Nếu không tìm thấy độc giả, bạn có thể chuyển hướng hoặc hiển thị thông báo lỗi
-        }
-    }
+    $query_update = "UPDATE docgia SET MaDocGia = ?, TenDocGia = ?, DiaChi = ?, SoThe = ? WHERE maDocGia = ?";
+    $statement_update = $pdo->prepare($query_update);
+    $statement_update->execute([$MaDocGia, $TenDocGia, $DiaChi, $SoThe, $MaDocGia]);
+    header("Location: index.php");
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -114,10 +82,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="card-body">
                 <form method="post" class="col-md-6 offset-md-3" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="<?= $reader->MaDocGia ?>">
+                    <!-- Sử dụng $MaDocGia thay vì $reader->MaDocGia -->
+                    <input type="hidden" name="id" value="<?php echo $_GET['id'] ?>">
                     <div class="form-group">
                         <label for="TenDocGia">Tên độc giả</label>
-                        <input type="text" name="TenDocGia" class="form-control<?= isset($errors['TenDocGia']) ? ' is-invalid' : '' ?>" id="TenDocGia" value="<?= html_escape($reader->TenDocGia) ?>" />
+                        <input type="text" name="TenDocGia" class="form-control" id="TenDocGia" value="<?php echo $reader['TenDocGia'] ?>" />
                         <?php if (isset($errors['TenDocGia'])) : ?>
                             <span class="invalid-feedback">
                                 <strong><?= $errors['TenDocGia'] ?></strong>
@@ -126,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="form-group">
                         <label for="DiaChi">Địa chỉ</label>
-                        <input type="text" name="DiaChi" class="form-control<?= isset($errors['DiaChi']) ? ' is-invalid' : '' ?>" id="DiaChi" value="<?= html_escape($reader->DiaChi) ?>" />
+                        <input type="text" name="DiaChi" class="form-control<?= isset($errors['DiaChi']) ? ' is-invalid' : '' ?>" id="DiaChi" value="<?php echo $reader['DiaChi'] ?>" />
                         <?php if (isset($errors['DiaChi'])) : ?>
                             <span class="invalid-feedback">
                                 <strong><?= $errors['DiaChi'] ?></strong>
@@ -135,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="form-group">
                         <label for="SoThe">Số thẻ</label>
-                        <input type="text" name="SoThe" class="form-control<?= isset($errors['SoThe']) ? ' is-invalid' : '' ?>" id="SoThe" value="<?= html_escape($reader->SoThe) ?>" />
+                        <input type="text" name="SoThe" class="form-control<?= isset($errors['SoThe']) ? ' is-invalid' : '' ?>" id="SoThe" value="<?php echo $reader['SoThe'] ?>" />
                         <?php if (isset($errors['SoThe'])) : ?>
                             <span class="invalid-feedback">
                                 <strong><?= $errors['SoThe'] ?></strong>

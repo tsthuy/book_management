@@ -104,15 +104,28 @@ class Reader
         }
         return null;
     }
-
     public function update(array $data): bool
     {
-        $this->fill($data);
+        // Không gọi fill ở đây
+        $this->MaDocGia = $data['MaDocGia'] ?? null;
+        $this->TenDocGia = $data['TenDocGia'] ?? '';
+        $this->DiaChi = $data['DiaChi'] ?? '';
+        $this->SoThe = $data['SoThe'] ?? '';
+
         if ($this->validate()) {
             return $this->save();
         }
         return false;
     }
+
+    // public function update(array $data): bool
+    // {
+    //     $this->fill($data);
+    //     if ($this->validate()) {
+    //         return $this->save();
+    //     }
+    //     return false;
+    // }
 
     public function delete(): bool
     {

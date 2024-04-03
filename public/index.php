@@ -46,6 +46,20 @@ if (isset($_GET['sort_by'])) {
     // Thực hiện truy vấn cơ sở dữ liệu với điều kiện ORDER BY để sắp xếp kết quả
     $readers = $reader->getReadersSorted($sort_by);
 }
+///////
+require_once __DIR__ . '/../src/bootstrap.php';
+// Gọi hàm SQL để đếm số lượng đọc giả
+$sql = "SELECT COUNT(*) AS total FROM docgia";
+$stmt = $PDO->prepare($sql);
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Trả về kết quả
+if ($result) {
+    // echo $result['total']; // Trả về số lượng đọc giả
+} else {
+    echo "0"; // Trả về 0 nếu không có độc giả nào
+}
 
 ?>
 <!DOCTYPE html>
@@ -66,7 +80,7 @@ if (isset($_GET['sort_by'])) {
     require_once 'header.php';
     ?>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Danh sách đọc giả</h1>
+        <h1 class="text-center mb-4">Danh sách đọc giả (Tổng số lượng độc giả: <?php echo $result['total']; ?>)</h1>
 
         <div class="row">
             <div class="col-md-6">
@@ -115,7 +129,7 @@ if (isset($_GET['sort_by'])) {
                         <th scope="col">Mã đọc giả</th>
                         <th scope="col">Tên đọc giả</th>
                         <th scope="col">Địa chỉ</th>
-                        <th scope="col">Số thẻ</th>
+                        <th scope="col">Số Thẻ</th>
                         <th scope="col">Hành động</th>
                     </tr>
                 </thead>

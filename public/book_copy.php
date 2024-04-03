@@ -29,14 +29,14 @@
     $maSach = isset($_GET['maSach']) ? $_GET['maSach'] : '';
     $maNXB = isset($_GET['maNXB']) ? $_GET['maNXB'] : '';
 
-    if (isset($_GET['maSach'])) {
+    if (!empty($maSach)) {
         $maSach = $_GET['maSach'];
         $searchResultsCopies = $bookcopy->searchCopy($maSach);
     }
 
-    if (isset($_GET['maNXB'])) {
+    if (!empty($maNXB)) {
         $maNXB = $_GET['maNXB'];
-        $searchResultsCopies = $bookcopy->searchCopy($maNXB);
+        // $searchResultsCopies = $bookcopy->searchCopy($maNXB);
     }
 
     $searchResults = [];
@@ -89,7 +89,7 @@
                     <ul class="flex space-x-4">
                         <li><a href="book_manage.php" class="hover:text-gray-300">Quản lý sách</a></li>
                         <li><a href="return.php" class="hover:text-gray-300">Trả sách</a></li>
-                        <li><a href="history.php" class="hover:text-gray-300">Lịch sử mượn trả</a></li>
+                        <li><a href="lichsumuontra.php" class="hover:text-gray-300">Lịch sử mượn trả</a></li>
                         <li><a href="login.php" class="hover:text-gray-300">
                                 <?php
                                 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
@@ -193,7 +193,6 @@
                         <?php if (!empty($maSach) || !empty($searchResultsCopies)) : ?>
                             <h2 class="text-xl font-bold mt-8">Thêm bản sao mới</h2>
                             <form action="./add_book_copy.php" method="POST" class="mb-4">
-                                <input type="text" name="searchcopy" value="<?php echo htmlspecialchars($searchResults); ?>" hidden class="p-2 border rounded-md mr-2 text-black">
 
                                 <input type="text" name="maSach" value="<?php echo htmlspecialchars($_GET['maSach'] ?? ''); ?>" class="p-2 border rounded-md mr-2 text-black">
                                 <input type="text" name="maBanSao" placeholder="Mã bản sao" class="p-2 border rounded-md mr-2 text-black">

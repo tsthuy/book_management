@@ -34,7 +34,13 @@ if (isset($_GET['search'])) {
 } else {
     $searchResults = $book->read();
 }
-
+//sql nang cao
+require_once __DIR__ . '/../src/bootstrap.php';
+$sql = "SELECT total_books_count() AS total_books";
+$stmt = $PDO->prepare($sql);
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_books = $result['total_books'];
 
 ?>
 
@@ -78,7 +84,7 @@ if (isset($_GET['search'])) {
                 <ul class="flex space-x-4">
                     <li><a href="book_manage.php" class="hover:text-gray-300">Quản lý sách</a></li>
                     <li><a href="return.php" class="hover:text-gray-300">Trả sách</a></li>
-                    <li><a href="history.php" class="hover:text-gray-300">Lịch sử mượn trả</a></li>
+                    <li><a href="lichsumuontra.php" class="hover:text-gray-300">Lịch sử mượn trả</a></li>
                     <li><a href="login.php" class="hover:text-gray-300">
                             <?php
                             if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
@@ -103,7 +109,8 @@ if (isset($_GET['search'])) {
         </form>
 
         <!-- Danh sách sách -->
-        <h2 class="text-2xl font-bold mb-4">Books</h2>
+
+        <h2 class="text-2xl font-bold mb-4">Books( <?php echo "Tổng số lượng sách: " . $total_books; ?> )</h2>
         <div class="overflow-x-auto">
             <table class="w-full table-auto">
                 <thead>

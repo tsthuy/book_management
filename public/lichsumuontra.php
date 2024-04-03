@@ -3,7 +3,7 @@
 require_once 'connect.php'; // Import file kết nối đến cơ sở dữ liệu
 
 // Truy vấn dữ liệu từ bảng phieumuon và chitietphieumuon
-$query = "SELECT pm.maPhieuMuon, pm.ngayMuon, pm.hanTra, pm.ngayTra, pm.phiPhat, pm.maDocGia, ctp.maBanSao, ctp.ttLucTra
+$query = "SELECT pm.maPhieuMuon, pm.ngayMuon, pm.hanTra, pm.ngayTra, pm.phiPhat, pm.maDocGia, pm.maSach, ctp.maBanSao, ctp.ttLucTra
           FROM phieumuon pm
           INNER JOIN chitietphieumuon ctp ON pm.maPhieuMuon = ctp.maPhieuMuon";
 
@@ -51,6 +51,7 @@ foreach ($result as $row) {
                     <tr class="bg-blue-300">
                         <th class="px-4 py-2">Mã Phiếu Mượn</th>
                         <th class="px-4 py-2">Mã Độc Giả</th>
+                        <th class="px-4 py-2">Mã Sach</th>
                         <th class="px-4 py-2">Mã Bản Sao</th>
                         <th class="px-4 py-2">Ngày Mượn</th>
                         <th class="px-4 py-2">Hạn Trả</th>
@@ -64,6 +65,7 @@ foreach ($result as $row) {
                         <tr>
                             <td class="border px-4 py-2"><?php echo $row['maPhieuMuon']; ?></td>
                             <td class="border px-4 py-2"><?php echo $row['maDocGia']; ?></td>
+                            <td class="border px-4 py-2"><?php echo $row['maSach']; ?></td>
                             <td class="border px-4 py-2"><?php echo $row['maBanSao']; ?></td>
                             <td class="border px-4 py-2"><?php echo $row['ngayMuon']; ?></td>
                             <td class="border px-4 py-2"><?php echo $row['hanTra']; ?></td>

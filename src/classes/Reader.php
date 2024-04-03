@@ -168,7 +168,7 @@ class Reader
     public function getReadersSorted(string $sort_by): array
     {
         $readers = [];
-        $statement = $this->db->prepare('SELECT * FROM DocGia ORDER BY ' . $sort_by);
+        $statement = $this->db->prepare('CALL SapXepDocGiaTheo' . $sort_by . '()');
         $statement->execute();
         while ($row = $statement->fetch()) {
             $reader = new Reader($this->db);

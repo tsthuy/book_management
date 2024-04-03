@@ -1,6 +1,7 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Lấy thông tin từ form
+    $maSach = $_POST['maSach'];
     $maPhieuMuon = $_POST['maPhieuMuon'];
     $ngayMuon = $_POST['ngayMuon'];
     $hanTra = $_POST['hanTra'];
@@ -11,9 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once 'connect.php';
 
     // Thực hiện truy vấn để chèn dữ liệu vào bảng phieumuon
-    $query_phieumuon = "INSERT INTO phieumuon (maPhieuMuon, ngayMuon, hanTra, maDocGia) VALUES (?, ?, ?, ?)";
+    $query_phieumuon = "INSERT INTO phieumuon (maPhieuMuon, ngayMuon, hanTra, maDocGia, maSach) VALUES (?, ?, ?, ?,?)";
     $statement_phieumuon = $pdo->prepare($query_phieumuon);
-    $statement_phieumuon->execute([$maPhieuMuon, $ngayMuon, $hanTra, $maDocGia]);
+    $statement_phieumuon->execute([$maPhieuMuon, $ngayMuon, $hanTra, $maDocGia, $maSach]);
 
     // Kiểm tra xem dữ liệu đã được chèn thành công vào bảng phieumuon hay không
     if ($statement_phieumuon->rowCount() > 0) {

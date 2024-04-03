@@ -29,38 +29,50 @@ if (isset($_POST['signin'])) {
     }
 }
 
-// Xử lý đăng ký
 if (isset($_POST['signup'])) {
-    // Lấy dữ liệu từ form đăng ký
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Kiểm tra email đã tồn tại hay chưa
-    $query = "SELECT * FROM quantrivien WHERE email = :email";
-    $statement = $pdo->prepare($query);
-    $statement->execute([':email' => $email]);
-    $existingUser = $statement->fetch(PDO::FETCH_ASSOC);
-
-    if ($existingUser) {
-        // Email đã tồn tại, thông báo lỗi hoặc redirect đến trang đăng ký với thông báo lỗi
-        header('Location: signup.php?error=email_taken');
-        exit();
-    } else {
-        // Thêm người dùng mới vào cơ sở dữ liệu
-        $query = "INSERT INTO quantrivien (email, tenQTV, matKhau) VALUES (:email, :name, :password)";
+    try {
+        // Kiểm tra email đã tồn tại hay chưa
+        $query = "SELECT * FROM quantrivien WHERE email = :email";
         $statement = $pdo->prepare($query);
-        $statement->execute([
-            ':email' => $email,
-            ':name' => $name,
-            ':password' => $password
-        ]);
+        $statement->execute([':email' => $email]);
+        $existingUser = $statement->fetch(PDO::FETCH_ASSOC);
 
-        // Đăng ký thành công, thực hiện các hành động cần thiết (ví dụ: redirect đến trang đăng nhập với thông báo thành công)
-        header('Location: login.php?signup_success=true');
-        exit();
+        if ($existingUser) {
+            // Email đã tồn tại, thông báo lỗi hoặc redirect đến trang đăng ký với thông báo lỗi
+            header('Location: signup.php?error=email_taken');
+            exit();
+        } else {
+            // Thêm người dùng mới vào cơ sở dữ liệu
+            $query = "INSERT INTO quantrivien (email, tenQTV, matKhau) VALUES (:email, :name, :password)";
+            $statement = $pdo->prepare($query);
+            $statement->execute([
+                ':email' => $email,
+                ':name' => $name,
+                ':password' => $password
+            ]);
+
+            // Đăng ký thành công, thực hiện các hành động cần thiết (ví dụ: redirect đến trang đăng nhập với thông báo thành công)
+            header('Location: login.php?signup_success=true');
+            exit();
+        }
+    } catch (PDOException $e) {
+        if ($e->getCode() === '45000') {
+            // Lỗi từ trigger, hiển thị thông báo lỗi
+            $error_message = $e->getMessage();
+            header('Location: signup.php?error=' . urlencode($error_message));
+            echo "Error: " . $error_message;
+            // exit();
+        } else {
+            // Xử lý các lỗi khác nếu cần
+            echo "Error: " . $e->getMessage();
+        }
     }
 }
+
 ?>
 
 

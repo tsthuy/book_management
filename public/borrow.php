@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mượn Sách</title>
     <!-- Gắn Tailwind CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 <?php
 define('TITLE', 'Tìm kiếm Thông Tin Độc Giả');
@@ -69,8 +72,7 @@ if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã Độc Giả</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Độc Giả</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Địa Chỉ</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số Điện Thoại</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số Thẻ Thư Viện</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chọn</th>
                     </tr>
                 </thead>
@@ -80,11 +82,10 @@ if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
                             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['MaDocGia']); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['TenDocGia']); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['DiaChi']); ?></td>
-                            <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['SoDienThoai']); ?></td>
-                            <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['Email']); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['SoThe']); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <!-- Button để điền thông tin vào form -->
-                                <button onclick="fillForm('<?php echo htmlspecialchars($row['MaDocGia']); ?>', '<?php echo htmlspecialchars($row['TenDocGia']); ?>', '<?php echo htmlspecialchars($row['DiaChi']); ?>', '<?php echo htmlspecialchars($row['SoDienThoai']); ?>', '<?php echo htmlspecialchars($row['Email']); ?>')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Chọn</button>
+                                <button onclick="fillForm('<?php echo htmlspecialchars($row['MaDocGia']); ?>', '<?php echo htmlspecialchars($row['TenDocGia']); ?>', '<?php echo htmlspecialchars($row['DiaChi']); ?>', '<?php echo htmlspecialchars($row['SoThe']); ?>', )" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Chọn</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -122,6 +123,7 @@ if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
                 <h3 class="text-lg font-semibold mb-2">Thông tin sách</h3>
                 <div class="bg-white p-4 shadow-inner rounded border-2 border-indigo-600">
                     <h3 class="text-lg font-semibold mb-2"><?php echo htmlspecialchars($row['tenSach']); ?></h3>
+                    <p class="text-gray-600 mb-4">Mã Sách: <?php echo htmlspecialchars($row['maSach']); ?></p>
                     <p class="text-gray-600 mb-4">Tác giả: <?php echo htmlspecialchars($row['maTG']); ?></p>
                     <p class="text-gray-600 mb-4">Nhà xuất bản: <?php echo htmlspecialchars($row['maNXB']); ?></p>
                 </div>
@@ -140,29 +142,54 @@ if (isset($_GET['keyword']) && !empty($_GET['keyword'])) {
                     <input type="text" name="diaChi" id="diaChi" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
                 </div>
                 <div class="mb-4">
-                    <label for="soDienThoai" class="block text-sm font-medium text-gray-700">Số điện thoại</label>
-                    <input type="text" name="soDienThoai" id="soDienThoai" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Số Thẻ Thư Viện</label>
+                    <input type="text" class="form-control" id="SoThe" name="SoThe">
                 </div>
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="email" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
-                </div>
+                <input type="text" name="maSach" value="<?php echo htmlspecialchars($row['maSach']); ?>" hidden>
+                <div id="theThuVienResult"></div> <!-- Hiển thị kết quả tìm kiếm -->
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Tạo Phiếu Mượn</button>
             </form>
 
         </div>
     </div>
+    <script>
+        // Điền thông tin của độc giả vào form
+        function fillForm(maDocGia, tenDocGia, diaChi, SoThe) {
+            document.getElementById('MaDocGia').value = maDocGia;
+            document.getElementById('tenDocGia').value = tenDocGia;
+            document.getElementById('diaChi').value = diaChi;
+            document.getElementById('SoThe').value = SoThe;
+        }
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     var addReaderBtn = document.getElementById('add-reader-btn');
+        //     var addReaderForm = document.getElementById('add-reader-form');
+
+        //     addReaderBtn.addEventListener('click', function() {
+        //         addReaderForm.style.display = 'block'; // Hiển thị form khi nhấp vào nút "Thêm độc giả"
+        //     });
+        // });
+
+        // function searchTheThuVien(soThe) {
+        //     $.ajax({
+        //         url: '/timkiemthethuvien.php', // Đường dẫn đến file PHP xử lý tìm kiếm
+        //         method: 'GET',
+        //         data: {
+        //             soThe: soThe
+        //         }, // Dữ liệu gửi đi
+        //         success: function(response) {
+        //             $('#theThuVienResult').html(response); // Hiển thị kết quả tìm kiếm trong div theThuVienResult
+        //         }
+        //     });
+        // }
+
+
+        // function selectThe(selectedValue) {
+        //     // Gán giá trị của ô chọn mã thẻ vào trường "Số thẻ" trong form thêm độc giả
+        //     document.getElementById('SoThe').value = selectedValue;
+        // }
+    </script>
 </body>
 
-<script>
-    // Điền thông tin của độc giả vào form
-    function fillForm(maDocGia, tenDocGia, diaChi, soDienThoai, email) {
-        document.getElementById('MaDocGia').value = maDocGia;
-        document.getElementById('tenDocGia').value = tenDocGia;
-        document.getElementById('diaChi').value = diaChi;
-        document.getElementById('soDienThoai').value = soDienThoai;
-        document.getElementById('email').value = email;
-    }
-</script>
+
 
 </html>

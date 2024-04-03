@@ -50,7 +50,13 @@ if (isset($_GET['keyword'])) {
     $readerCards = $readerCard->getReaderCardsSorted($sort_by);
 }
 
-
+// sql nang cao
+require_once __DIR__ . '/../src/bootstrap.php';
+$sql = "SELECT total_library_cards_count() AS total_library_cards";
+$stmt = $PDO->prepare($sql);
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$total_library_cards = $result['total_library_cards'];
 
 ?>
 
@@ -73,7 +79,8 @@ if (isset($_GET['keyword'])) {
     require_once 'header.php';
     ?>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Danh sách thẻ thư viện</h1>
+
+        <h1 class="text-center mb-4">Danh sách thẻ thư viện( <?php echo "Tổng số lượng thẻ thư viện: " . $total_library_cards; ?>)</h1>
 
         <div class="flex-container d-flex">
             <div class="search-input flex-grow-1 mr-3">

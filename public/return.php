@@ -38,7 +38,7 @@
                 <ul class="flex space-x-4">
                     <li><a href="home.php" class="hover:text-gray-300">Trang chủ</a></li>
                     <li><a href="home.php" class="hover:text-gray-300">Mượn sách</a></li>
-                    <li><a href="return.php" class="hover:text-gray-300">Trả sách</a></li>
+                    <li><a href="lichsumuontra.php" class="hover:text-gray-300">Lịch Sử Mượn Trả</a></li>
                 </ul>
             </nav>
         </div>
@@ -68,6 +68,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã Phiếu Mượn</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hạn Trả</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chọn</th>
                     </tr>
                 </thead>
@@ -75,9 +76,11 @@
                     <?php foreach ($results as $row) : ?>
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['maPhieuMuon']); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap"><?php echo htmlspecialchars($row['hanTra']); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap">
+
                                 <!-- Button để điền thông tin vào form -->
-                                <button onclick="fillForm('<?php echo htmlspecialchars($row['maPhieuMuon']); ?>')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Chọn</button>
+                                <button onclick="fillForm('<?php echo htmlspecialchars($row['maPhieuMuon']); ?>', '<?php echo htmlspecialchars($row['hanTra']); ?>')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Chọn</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -85,7 +88,6 @@
             </table>
         </div>
     <?php endif; ?>
-
 
     <div class="container mx-auto py-8 p-2">
         <h2 class="text-2xl font-semibold mb-4 text-center">Trả Sách</h2>
@@ -96,8 +98,13 @@
                     <input type="text" name="maPhieuMuon" id="maPhieuMuon" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
                 </div>
                 <div class="mb-4">
+                    <label for="hanTra" class="block text-sm font-medium text-gray-700">Hạn Trả</label>
+                    <input type="text" name="hanTra" id="hanTra" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                </div>
+                <div class="mb-4">
                     <label for="ngayTra" class="block text-sm font-medium text-gray-700">Ngày Trả</label>
-                    <input type="text" name="ngayTra" id="ngayTra" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+                    <input type="text" name="ngayTra" id="ngayTra" class="mt-1 p-2 w-full border border-gray-300 rounded-md" onchange="calculateLateFee()">
+                    <button type="button" onclick="calculateLateFee()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Tính Phí Phạt</button>
                 </div>
                 <div class="mb-4">
                     <label for="phiPhat" class="block text-sm font-medium text-gray-700">Phí Phạt</label>
@@ -113,11 +120,38 @@
     </div>
 </body>
 <script>
-    var selectedMaPhieuMuon = '';
     // Điền thông tin của độc giả vào form
-    function fillForm(maPhieuMuon) {
+    function fillForm(maPhieuMuon, hanTra) {
         document.getElementById('maPhieuMuon').value = maPhieuMuon;
-        selectedMaPhieuMuon = maPhieuMuon;
+        document.getElementById('hanTra').value = hanTra;
+        console.log(hanTra);
+    }
+    // Chuyển đổi chuỗi ngày thành đối tượng Date
+    function convertToDate(dateString) {
+        var parts = dateString.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]); // Tháng trong JavaScript bắt đầu từ 0 (0 - 11)
+    }
+
+    // Kiểm tra và tính phí phạt
+    function calculateLateFee() {
+        var hanTraString = document.getElementById('hanTra').value;
+        var ngayTraString = document.getElementById('ngayTra').value;
+
+        var hanTra = convertToDate(hanTraString);
+        var ngayTra = convertToDate(ngayTraString);
+
+        // Chuyển đổi thành số ngày để so sánh
+        var timeDiff = ngayTra.getTime() - hanTra.getTime();
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+        // Kiểm tra nếu ngày trả muộn hơn hạn trả
+        if (diffDays > 0) {
+            // Hiển thị phí phạt là 10k
+            document.getElementById('phiPhat').value = '10000';
+        } else {
+            // Ngược lại, không có phí phạt
+            document.getElementById('phiPhat').value = '0';
+        }
     }
 </script>
 

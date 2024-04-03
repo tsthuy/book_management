@@ -47,7 +47,7 @@ foreach ($books as $book) {
     $html_books .= '<p class="text-gray-600 mb-4">Tác giả: ' . htmlspecialchars($book['maTG']) . '</p>';
     $html_books .= '<p class="text-gray-600 mb-4">Nhà xuất bản: ' . htmlspecialchars($book['maNXB']) . '</p>';
     $html_books .= '<a href="borrow.php?maSach=' . $book['maSach'] . '" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Mượn sách</a>';
-    $html_books .= '<a href="book.php?maSach=' . $book['maSach'] . '" class="bg-purple-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full ml-2">Quản lý sách</a>';
+    // $html_books .= '<a href="book.php?maSach=' . $book['maSach'] . '" class="bg-purple-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full ml-2">Quản lý sách</a>';
     $html_books .= '</div>';
 }
 ?>

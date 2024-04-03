@@ -2,11 +2,10 @@
 // Kiểm tra xem nút "Tạo Phiếu Mượn và Lưu Thông Tin Đọc Giả" đã được nhấn chưa
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Lấy thông tin từ form
+
     $maDocGia = $_POST['MaDocGia'];
+    $SoThe = $_POST['SoThe'];
     $tenDocGia = $_POST['tenDocGia']; // Thêm dòng này để lấy tên độc giả từ form
-    $diaChi = $_POST['diaChi']; // Thêm dòng này để lấy địa chỉ từ form
-    $soDienThoai = $_POST['soDienThoai']; // Thêm dòng này để lấy số điện thoại từ form
-    $email = $_POST['email']; // Thêm dòng này để lấy email từ form
 
     require_once 'connect.php';
     // Kiểm tra xem độc giả đã tồn tại trong cơ sở dữ liệu hay không
@@ -16,9 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $existing_docgia = $statement_check->fetch(PDO::FETCH_ASSOC);
     // Nếu độc giả chưa tồn tại, thêm mới vào cơ sở dữ liệu
     if (!$existing_docgia) {
-        $query_insert = "INSERT INTO docgia (MaDocGia, TenDocGia, DiaChi, SoDienThoai, Email) VALUES (?, ?, ?, ?, ?)";
+        $query_insert = "INSERT INTO docgia (MaDocGia, TenDocGia, DiaChi, SoThe) VALUES (?, ?, ?, ?)";
         $statement_insert = $pdo->prepare($query_insert);
-        $statement_insert->execute([$maDocGia, $tenDocGia, $diaChi, $soDienThoai, $email]);
+        $statement_insert->execute([$maDocGia, $tenDocGia, $diaChi, $SoThe]);
         echo "new user already created";
     }
 }
@@ -55,11 +54,15 @@ require 'header.php';
                     <input type="text" name="maPhieuMuon" id="maPhieuMuon" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value="<?php echo generateMaPhieuMuon(); ?>" readonly>
                 </div>
                 <div class="mb-4">
-                    <label for="ngayMuon" class="block text-sm font-medium text-gray-700">Ngày Mượn</label>
+                    <label for="maPhieuMuon" class="block text-sm font-medium text-gray-700">Mã Sách</label>
+                    <input type="text" name="maSach" id="maSach" class="mt-1 p-2 w-full border border-gray-300 rounded-md" value=<?php echo $_POST['maSach'] ?>>
+                </div>
+                <div class="mb-4">
+                    <label for="ngayMuon" class="block text-sm font-medium text-gray-700">Ngày Mượn(YYYY-MM-DD)</label>
                     <input type="text" data-date="YYYY-MM-DD" data-date-format="YYYY-MM-DD" name="ngayMuon" id="ngayMuon" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
                 </div>
                 <div class="mb-4">
-                    <label for="hanTra" class="block text-sm font-medium text-gray-700">Hạn Trả</label>
+                    <label for="hanTra" class="block text-sm font-medium text-gray-700">Hạn Trả(YYYY-MM-DD)</label>
                     <input type="text" name="hanTra" id="hanTra" class="mt-1 p-2 w-full border border-gray-300 rounded-md">
                 </div>
                 <div class="mb-4">

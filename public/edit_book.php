@@ -1,38 +1,44 @@
 <?php
 session_start(); // Khởi động session
-$session_duration = 5; // 5 giây
-session_set_cookie_params($session_duration);
+
 require_once 'C:\xampp\New folder\htdocs\project\config\db_connect.php';
-require_once 'C:\xampp\New folder\htdocs\project\model\book_management.php'; // Sử dụng tên lớp và namespace đúng
+require_once 'C:\xampp\New folder\htdocs\project\model\book_management.php';
+
 
 $db = new db_connect();
 $connection = $db->connect();
 
 // Khởi tạo đối tượng sách
-$book = new \Book\sach($connection); // Sử dụng tên lớp và namespace đúng
+$book = new \Book\sach($connection);
 
 // Kiểm tra xác nhận chỉnh sửa sách
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Lấy thông tin từ form chỉnh sửa sách
-    $book->setMaSach($_POST['maSach']);
-    $book->setTenSach($_POST['tenSach']);
-    $book->setMaTG($_POST['maTG']);
-    $book->setMaNXB($_POST['maNXB']);
-    $book->setMaLoai($_POST['maLoai']);
+    try {
+        // Lấy thông tin từ form chỉnh sửa sách
+        $book->setMaSach($_POST['maSach']);
+        $book->setTenSach($_POST['tenSach']);
+        $book->setMaTG($_POST['maTG']);
+        $book->setMaNXB($_POST['maNXB']);
+        $book->setMaLoai($_POST['maLoai']);
 
-    // Thực hiện cập nhật thông tin sách
-    if ($book->update()) {
-        // Nếu cập nhật thành công, đặt thông báo vào session
-        $_SESSION['update_book_result'] = "Chỉnh sửa sách thành công.";
-    } else {
-        // Nếu cập nhật không thành công, đặt thông báo vào session
-        $_SESSION['update_book_result'] = "Chỉnh sửa sách không thành công.";
+        // Thực hiện cập nhật thông tin sách
+        if ($book->update()) {
+            // Nếu cập nhật thành công, đặt thông báo vào session
+            $_SESSION['update_book_result'] = "Chỉnh sửa sách thành công.";
+        } else {
+            // Nếu cập nhật không thành công, đặt thông báo vào session
+            $_SESSION['update_book_result'] = "Chỉnh sửa sách không thành công.";
+        }
+
+        // Chuyển hướng về trang index.php
+        header("Location: ./book_manage.php");
+        exit();
+    } catch (PDOException $e) {
+        // Xử lý lỗi và hiển thị thông báo cho người dùng
+        $_SESSION['update_book_result'] = "Tên sách không được để trống";
+        header("Location: ./book_manage.php");
+        exit();
     }
-
-    // Chuyển hướng về trang index.php
-    header("Location: ./book_manage.php");
-
-    exit();
 }
 
 // Lấy thông tin sách từ cơ sở dữ liệu dựa trên mã sách
@@ -50,6 +56,7 @@ if (isset($_GET['maSach'])) {
     header("Location: ./book_manage.php");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
