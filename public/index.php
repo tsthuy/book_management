@@ -80,7 +80,7 @@ if ($result) {
     require_once 'header.php';
     ?>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Danh sách đọc giả (Tổng số lượng độc giả: <?php echo $result['total']; ?>)</h1>
+        <h1 class="text-center mb-4 uppercase font-bold">Danh sách đọc giả (Tổng số lượng độc giả: <?php echo $result['total']; ?>)</h1>
 
         <div class="row">
             <div class="col-md-6">

@@ -1,4 +1,5 @@
 <?php
+
 // Kiểm tra xem nút "Tạo Phiếu Mượn và Lưu Thông Tin Đọc Giả" đã được nhấn chưa
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Lấy thông tin từ form

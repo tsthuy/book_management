@@ -80,7 +80,7 @@ $total_library_cards = $result['total_library_cards'];
     ?>
     <div class="container mt-5">
 
-        <h1 class="text-center mb-4">Danh sách thẻ thư viện( <?php echo "Tổng số lượng thẻ thư viện: " . $total_library_cards; ?>)</h1>
+        <h1 class="text-center mb-4 uppercase font-bold">Danh sách thẻ thư viện( <?php echo "Tổng số lượng thẻ thư viện: " . $total_library_cards; ?>)</h1>
 
         <div class="flex-container d-flex">
             <div class="search-input flex-grow-1 mr-3">
